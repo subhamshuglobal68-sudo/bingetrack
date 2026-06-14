@@ -1,3 +1,5 @@
+'use client'
+import { useState } from 'react'
 import Image from 'next/image'
 import { getInitials } from '@/lib/utils'
 
@@ -8,7 +10,9 @@ interface AvatarProps {
 }
 
 export function Avatar({ src, name, size = 40 }: AvatarProps) {
-  if (src) {
+  const [imgError, setImgError] = useState(false)
+
+  if (src && !imgError) {
     return (
       <Image
         src={src}
@@ -16,6 +20,7 @@ export function Avatar({ src, name, size = 40 }: AvatarProps) {
         width={size}
         height={size}
         className="rounded-full object-cover ring-2 ring-[#2a2520]"
+        onError={() => setImgError(true)}
       />
     )
   }

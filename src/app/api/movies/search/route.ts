@@ -1,7 +1,14 @@
 import { searchMovies } from '@/lib/omdb'
+import { rateLimit } from '@/lib/rate-limit'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
+  const ip = request.headers.get('x-forwarded-for') ?? 'anonymous'
+  const { limited } = rateLimit(`search:${ip}`, 60_000, 30)
+  if (limited) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const { searchParams } = new URL(request.url)
   const q = searchParams.get('q')?.trim()
 

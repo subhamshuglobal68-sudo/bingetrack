@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   title: 'BingeTrack — Track Your Movies',
   description:
     'Create and share movie watchlists. Discover, organize, and track the films you love. Powered by OMDb.',
+  openGraph: {
+    title: 'BingeTrack — Track Your Movies',
+    description:
+      'Create and share movie watchlists. Discover, organize, and track the films you love.',
+    siteName: 'BingeTrack',
+    type: 'website',
+  },
 }
 
 export default async function RootLayout({

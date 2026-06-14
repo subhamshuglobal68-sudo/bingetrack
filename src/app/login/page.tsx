@@ -21,7 +21,6 @@ function LoginForm() {
   const [success, setSuccess] = useState('')
 
   const getFriendlyError = (message: string) => {
-    console.error('[Auth Error]', message)
     if (message.includes('Invalid login credentials')) return 'Invalid email or password.'
     if (message.includes('already registered') || message.includes('User already registered')) return 'An account with this email already exists. If you recently deleted this account, please wait a few minutes or contact support.'
     if (message.includes('Email not confirmed')) return 'Please confirm your email before signing in.'

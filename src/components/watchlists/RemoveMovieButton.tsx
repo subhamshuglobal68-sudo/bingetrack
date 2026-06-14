@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
@@ -14,6 +15,7 @@ interface RemoveMovieButtonProps {
 
 export function RemoveMovieButton({ watchlistId, imdbId, movieTitle }: RemoveMovieButtonProps) {
   const supabase = createClient()
+  const router = useRouter()
   const { toast, showToast, dismissToast } = useToast()
   const [confirming, setConfirming] = useState(false)
   const [removing, setRemoving] = useState(false)
@@ -31,8 +33,7 @@ export function RemoveMovieButton({ watchlistId, imdbId, movieTitle }: RemoveMov
       showToast('Failed to remove movie', 'error')
     } else {
       showToast('Removed from list', 'success')
-      // Refresh the page to reflect the removal
-      window.location.reload()
+      router.refresh()
     }
     setConfirming(false)
   }

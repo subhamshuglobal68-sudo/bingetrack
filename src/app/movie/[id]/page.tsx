@@ -18,6 +18,11 @@ export async function generateMetadata({ params }: MoviePageProps): Promise<Meta
   return {
     title: `${movie.Title} (${formatYear(movie.Year)}) — BingeTrack`,
     description: movie.Plot?.slice(0, 160),
+    openGraph: {
+      title: `${movie.Title} (${formatYear(movie.Year)})`,
+      description: movie.Plot?.slice(0, 200),
+      type: 'website',
+    },
   }
 }
 

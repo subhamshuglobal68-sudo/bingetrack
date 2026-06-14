@@ -44,18 +44,32 @@ export async function GET(request: Request) {
 
   // Auto-create profile if it doesn't exist (handles first-time signup)
   if (user) {
+    const baseUsername = user.email?.split('@')[0] ?? `user_${user.id.slice(0, 8)}`
     const { error: profileError } = await supabase
       .from('profiles')
       .upsert(
         {
           id: user.id,
-          username: user.email?.split('@')[0] ?? `user_${user.id.slice(0, 8)}`,
+          username: baseUsername,
           full_name: null,
           avatar_url: null,
         },
         { onConflict: 'id' }
       )
-    if (profileError) {
+    // If username conflicts with another user, retry with suffix
+    if (profileError?.code === '23505') {
+      await supabase
+        .from('profiles')
+        .upsert(
+          {
+            id: user.id,
+            username: `${baseUsername}_${user.id.slice(0, 6)}`,
+            full_name: null,
+            avatar_url: null,
+          },
+          { onConflict: 'id' }
+        )
+    } else if (profileError) {
       console.error('[Auth Callback] Profile upsert failed:', profileError.message)
     }
   }

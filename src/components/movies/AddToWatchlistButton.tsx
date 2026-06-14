@@ -152,6 +152,7 @@ export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButton
                   onChange={e => setNewName(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && createAndAdd()}
                   placeholder="List name..."
+                  maxLength={100}
                   className="mb-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors"
                 />
                 <div className="flex gap-2">

@@ -1,8 +1,9 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
-import { Film, LogOut, List, User } from 'lucide-react'
+import { LogOut, List, User } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Avatar } from '@/components/ui/Avatar'
 import { cn } from '@/lib/utils'
@@ -55,7 +56,14 @@ export function Navbar({ profile }: NavbarProps) {
           href="/"
           className="flex items-center gap-2.5 text-xl font-bold text-[#d4a853] transition-opacity hover:opacity-90 font-display"
         >
-          <Film size={26} strokeWidth={2.5} />
+          <Image
+            src="/icon.png"
+            alt="BingeTrack logo"
+            width={28}
+            height={36}
+            className="rounded-sm"
+            priority
+          />
           <span className="tracking-tight">BingeTrack</span>
         </Link>
 

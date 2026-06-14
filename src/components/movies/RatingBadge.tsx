@@ -1,4 +1,4 @@
-npm import { Star } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { formatRating } from '@/lib/utils'
 
 export function RatingBadge({ rating }: { rating: number }) {

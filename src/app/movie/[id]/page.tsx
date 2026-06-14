@@ -136,6 +136,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
                   release_year: movie.Year,
                 }}
                 isLoggedIn={!!user}
+                userId={user?.id}
               />
 
               {/* Watch Trailer */}

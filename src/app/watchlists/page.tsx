@@ -16,9 +16,17 @@ export default function WatchlistsPage() {
   const [showCreate, setShowCreate] = useState(false)
 
   const fetchWatchlists = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      setWatchlists([])
+      setLoading(false)
+      return
+    }
+
     const { data } = await supabase
       .from('watchlists')
       .select('*, watchlist_items(count)')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
     setWatchlists((data as WatchlistWithCount[]) ?? [])

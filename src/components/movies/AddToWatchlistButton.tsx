@@ -14,9 +14,10 @@ interface AddToWatchlistButtonProps {
     release_year: string | null
   }
   isLoggedIn: boolean
+  userId?: string
 }
 
-export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButtonProps) {
+export function AddToWatchlistButton({ movie, isLoggedIn, userId }: AddToWatchlistButtonProps) {
   const { toast, showToast, dismissToast } = useToast()
   const [open, setOpen] = useState(false)
   const [watchlists, setWatchlists] = useState<Watchlist[]>([])
@@ -40,12 +41,13 @@ export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButton
 
   // Fetch user's watchlists when dropdown opens
   useEffect(() => {
-    if (!open || !isLoggedIn) return
+    if (!open || !isLoggedIn || !userId) return
     const supabase = createClient()
     const fetchData = async () => {
       const { data: lists } = await supabase
         .from('watchlists')
         .select('*')
+        .eq('user_id', userId)
         .order('created_at')
       if (!lists) return
       setWatchlists(lists)
@@ -59,7 +61,7 @@ export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButton
       setAddedIds(new Set(items?.map(i => i.watchlist_id) ?? []))
     }
     fetchData()
-  }, [open, isLoggedIn, movie.imdb_id])
+  }, [open, isLoggedIn, userId, movie.imdb_id])
 
   if (!isLoggedIn) {
     return (
@@ -93,18 +95,12 @@ export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButton
   }
 
   const createAndAdd = async () => {
-    if (!newName.trim()) return
+    if (!newName.trim() || !userId) return
     setLoading(true)
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      showToast('You must be signed in', 'error')
-      setLoading(false)
-      return
-    }
     const { data: list, error } = await supabase
       .from('watchlists')
-      .insert({ name: newName.trim(), is_public: true, user_id: user.id })
+      .insert({ name: newName.trim(), is_public: true, user_id: userId })
       .select()
       .single()
     if (error || !list) {

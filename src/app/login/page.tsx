@@ -195,7 +195,8 @@ function LoginForm() {
         </div>
 
         <p className="mt-6 text-center text-xs text-text-secondary">
-          By signing in, you agree to our terms. Your data stays private.
+          By signing in, you agree to our terms. View our{' '}
+          <a href="/privacy" className="text-[#d4a853] hover:underline transition-colors">Privacy Policy</a>.
         </p>
       </div>
     </div>

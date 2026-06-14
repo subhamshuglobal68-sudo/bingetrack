@@ -3,9 +3,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
-import { LogOut, List, User } from 'lucide-react'
+import { LogOut, List, User, Download } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Avatar } from '@/components/ui/Avatar'
+import { ExportDataModal } from '@/components/data/ExportDataModal'
 import { cn } from '@/lib/utils'
 import type { Profile } from '@/types'
 
@@ -18,6 +19,7 @@ export function Navbar({ profile }: NavbarProps) {
   const supabase = createClient()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [showExport, setShowExport] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -44,6 +46,7 @@ export function Navbar({ profile }: NavbarProps) {
   }
 
   return (
+    <>
     <nav className={cn(
       'sticky top-0 z-40 border-b border-[#2a2520] transition-all duration-300',
       scrolled
@@ -103,6 +106,15 @@ export function Navbar({ profile }: NavbarProps) {
                   >
                     <User size={16} className="text-text-secondary" /> Profile
                   </Link>
+                  <button
+                    onClick={() => {
+                      setDropdownOpen(false)
+                      setShowExport(true)
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-sm text-text-primary hover:bg-surface-2 transition-colors cursor-pointer"
+                  >
+                    <Download size={16} className="text-text-secondary" /> Export Data
+                  </button>
                   <hr className="border-[#2a2520]" />
                   <button
                     onClick={handleSignOut}
@@ -124,5 +136,7 @@ export function Navbar({ profile }: NavbarProps) {
         </div>
       </div>
     </nav>
+    <ExportDataModal isOpen={showExport} onClose={() => setShowExport(false)} />
+    </>
   )
 }

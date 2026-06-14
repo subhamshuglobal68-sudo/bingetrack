@@ -8,7 +8,7 @@ import { Suspense, useState } from 'react'
 function LoginForm() {
   const searchParams = useSearchParams()
   const rawRedirect = searchParams.get('redirect') ?? '/watchlists'
-  const redirect = rawRedirect.startsWith('/') && !rawRedirect.includes('://')
+  const redirect = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') && !rawRedirect.includes('://')
     ? rawRedirect
     : '/watchlists'
   const supabase = createClient()
@@ -17,8 +17,17 @@ function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState(() => searchParams.get('error') ?? '')
   const [success, setSuccess] = useState('')
+
+  const getFriendlyError = (message: string) => {
+    if (message.includes('Invalid login credentials')) return 'Invalid email or password.'
+    if (message.includes('already registered')) return 'An account with this email already exists.'
+    if (message.includes('Email not confirmed')) return 'Please confirm your email before signing in.'
+    if (message.includes('Password should be at least')) return 'Password must be at least 6 characters.'
+    if (message.includes('Unable to validate email address')) return 'Please enter a valid email address.'
+    return 'Something went wrong. Please try again.'
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,7 +45,7 @@ function LoginForm() {
       })
       setLoading(false)
       if (error) {
-        setError(error.message)
+        setError(getFriendlyError(error.message))
       } else {
         setSuccess('Check your email for a confirmation link.')
       }
@@ -47,7 +56,7 @@ function LoginForm() {
       })
       setLoading(false)
       if (error) {
-        setError(error.message)
+        setError(getFriendlyError(error.message))
       } else {
         window.location.href = redirect
       }

@@ -36,24 +36,35 @@ export default function HomePage() {
       <div className="absolute inset-0 -z-10 bg-gradient-hero" />
 
       {/* Hero */}
-      <div className="mb-14 text-center">
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl font-display animate-fade-in-up">
+      <section aria-labelledby="hero-heading" className="mb-14 text-center">
+        <h1
+          id="hero-heading"
+          className="mb-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl font-display animate-fade-in-up"
+        >
           <span className="text-text-primary">Discover & Track </span>
-          <span className="bg-gradient-to-r from-[#d4a853] to-[#e8c06a] bg-clip-text text-transparent">Movies</span>
+          <span className="bg-gradient-to-r from-[#d4a853] to-[#e8c06a] bg-clip-text text-transparent">
+            Movies for Free
+          </span>
         </h1>
         <p className="mb-10 text-lg text-text-secondary max-w-xl mx-auto leading-relaxed animate-fade-in-up stagger-1">
-          Search any movie, save it to a list, share with friends.
+          BingeTrack is a free movie tracking app. Search any film from the OMDb database,
+          save it to a named watchlist, and share your lists publicly — no subscription needed.
         </p>
         <div className="animate-fade-in-up stagger-2">
           <MovieSearch onSearchActive={handleSearchActive} />
         </div>
-      </div>
+      </section>
 
       {/* Popular movies (hidden when search is active) */}
       {!searchActive && (
-        <section className="animate-fade-in-up stagger-3">
+        <section aria-labelledby="popular-heading" className="animate-fade-in-up stagger-3">
           <div className="mb-6 flex items-center gap-3">
-            <h2 className="text-xl font-semibold text-text-primary">Popular Right Now</h2>
+            <h2
+              id="popular-heading"
+              className="text-xl font-semibold text-text-primary"
+            >
+              What Movies Are Popular Right Now?
+            </h2>
             <div className="h-px flex-1 bg-[#2a2520]" />
           </div>
           {loading ? <Spinner /> : <MovieGrid movies={popular} />}

@@ -5,16 +5,17 @@ export function Footer() {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d4a853]/30 to-transparent" />
       <div className="mx-auto max-w-7xl px-4 text-center text-sm text-text-secondary">
         <p>
-          Movie data provided by{' '}
+          Movie data and ratings provided by the{' '}
           <a
             href="https://www.omdbapi.com"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#d4a853] hover:underline font-medium transition-colors"
           >
-            OMDb API
+            OMDb API (Open Movie Database)
           </a>
-          . BingeTrack is not endorsed or certified by OMDb.
+          . Ratings shown are IMDB community ratings on a 1–10 scale.
+          BingeTrack is not affiliated with, endorsed by, or certified by OMDb or IMDB.
         </p>
       </div>
     </footer>

@@ -43,7 +43,7 @@ export function RemoveMovieButton({ watchlistId, imdbId, movieTitle }: RemoveMov
       <button
         onClick={() => setConfirming(true)}
         className="absolute top-2 right-2 z-10 rounded-full bg-surface/80 p-1.5 text-text-secondary hover:bg-surface hover:text-red-400 transition-colors backdrop-blur-sm"
-        title="Remove from watchlist"
+        aria-label={`Remove ${movieTitle} from watchlist`}
       >
         <X size={14} />
       </button>

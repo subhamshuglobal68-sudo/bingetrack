@@ -5,10 +5,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/api/', '/auth/', '/watchlists/'],
+        allow: ['/', '/movie/', '/u/', '/watchlists/', '/privacy'],
+        disallow: [
+          '/api/',
+          '/auth/',
+          '/login',
+          '/signup',
+          '/forgot-password',
+          '/search',
+        ],
       },
     ],
-    sitemap: `${process.env.NEXT_PUBLIC_SUPABASE_URL ? 'https://bingetrack.vercel.app' : 'http://localhost:3000'}/sitemap.xml`,
+    sitemap: 'https://bingetrack.vercel.app/sitemap.xml',
   }
 }

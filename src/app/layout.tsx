@@ -4,6 +4,7 @@ import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { createClient } from '@/lib/supabase/server'
+import { WebSiteSchema, WebAppSchema } from '@/components/seo/JsonLd'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -18,16 +19,29 @@ const outfit = Outfit({
 })
 
 export const metadata: Metadata = {
-  title: 'BingeTrack — Track Your Movies',
+  metadataBase: new URL('https://bingetrack.vercel.app'),
+  title: {
+    default: 'BingeTrack — Track Your Movies',
+    template: '%s — BingeTrack',
+  },
   description:
-    'Create and share movie watchlists. Discover, organize, and track the films you love. Powered by OMDb.',
+    'Create and share movie watchlists for free. Search any film, track what you want to watch, and share curated lists with friends.',
   openGraph: {
-    title: 'BingeTrack — Track Your Movies',
-    description:
-      'Create and share movie watchlists. Discover, organize, and track the films you love.',
     siteName: 'BingeTrack',
     type: 'website',
+    images: [
+      {
+        url: '/og-default.png',
+        width: 1200,
+        height: 630,
+        alt: 'BingeTrack — Track Your Movies',
+      },
+    ],
   },
+  twitter: {
+    card: 'summary_large_image',
+  },
+  alternates: { canonical: 'https://bingetrack.vercel.app' },
 }
 
 export default async function RootLayout({
@@ -53,6 +67,8 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="film-grain flex min-h-screen flex-col bg-background antialiased font-sans">
+        <WebSiteSchema />
+        <WebAppSchema />
         <div className="warm-spotlight" />
         <div className="dust-motes" />
         <Navbar profile={profile} />

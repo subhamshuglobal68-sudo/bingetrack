@@ -4,7 +4,12 @@ import { getPosterUrl } from '@/lib/omdb'
 import { formatYear } from '@/lib/utils'
 import type { OMDbSearchResult } from '@/types'
 
-export function MovieCard({ movie }: { movie: OMDbSearchResult }) {
+interface MovieCardProps {
+  movie: OMDbSearchResult
+  priority?: boolean
+}
+
+export function MovieCard({ movie, priority = false }: MovieCardProps) {
   const posterUrl = getPosterUrl(movie.Poster)
 
   return (
@@ -17,6 +22,7 @@ export function MovieCard({ movie }: { movie: OMDbSearchResult }) {
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+            priority={priority}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-text-secondary text-xs text-center p-4">

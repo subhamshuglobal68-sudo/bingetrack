@@ -27,7 +27,7 @@ export function AddToWatchlistButton({ movie, isLoggedIn, userId }: AddToWatchli
   const [loading, setLoading] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside or pressing Escape
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -35,8 +35,18 @@ export function AddToWatchlistButton({ movie, isLoggedIn, userId }: AddToWatchli
         setCreating(false)
       }
     }
+    const escHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        setCreating(false)
+      }
+    }
     document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    document.addEventListener('keydown', escHandler)
+    return () => {
+      document.removeEventListener('mousedown', handler)
+      document.removeEventListener('keydown', escHandler)
+    }
   }, [])
 
   // Fetch user's watchlists when dropdown opens

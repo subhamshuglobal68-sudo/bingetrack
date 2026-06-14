@@ -7,6 +7,7 @@ import { formatYear } from '@/lib/utils'
 import { WatchlistHeader } from '@/components/watchlists/WatchlistHeader'
 import { RemoveMovieButton } from '@/components/watchlists/RemoveMovieButton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { BreadcrumbSchema } from '@/components/seo/JsonLd'
 import type { Metadata } from 'next'
 import type { Watchlist, WatchlistItem } from '@/types'
 
@@ -19,11 +20,39 @@ export async function generateMetadata({ params }: WatchlistDetailPageProps): Pr
   const supabase = await createClient()
   const { data: watchlist } = await supabase
     .from('watchlists')
-    .select('name')
+    .select('name, description')
     .eq('id', id)
     .single()
+
+  if (!watchlist) {
+    return { title: 'Watchlist — BingeTrack' }
+  }
+
+  const { count } = await supabase
+    .from('watchlist_items')
+    .select('*', { count: 'exact', head: true })
+    .eq('watchlist_id', id)
+
+  const title = watchlist.name
+  const description = watchlist.description
+    ? watchlist.description.slice(0, 155)
+    : `A curated movie watchlist on BingeTrack with ${count ?? 0} films.`
+
   return {
-    title: watchlist ? `${watchlist.name} — BingeTrack` : 'Watchlist — BingeTrack',
+    title: `${title} — Watchlist`,
+    description,
+    openGraph: {
+      title: `${title} — BingeTrack Watchlist`,
+      description,
+    },
+    twitter: {
+      card: 'summary',
+      title: `${title} — BingeTrack Watchlist`,
+      description,
+    },
+    alternates: {
+      canonical: `https://bingetrack.vercel.app/watchlists/${id}`,
+    },
   }
 }
 
@@ -60,6 +89,16 @@ export default async function WatchlistDetailPage({ params }: WatchlistDetailPag
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: 'https://bingetrack.vercel.app' },
+          {
+            name: watchlist.name,
+            url: `https://bingetrack.vercel.app/watchlists/${id}`,
+          },
+        ]}
+      />
+
       <WatchlistHeader
         watchlist={watchlist as Watchlist}
         isOwner={isOwner}
@@ -80,11 +119,14 @@ export default async function WatchlistDetailPage({ params }: WatchlistDetailPag
           }
         />
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {movieItems.map(item => {
+        <ul
+          aria-label="Movies in this watchlist"
+          className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+        >
+          {movieItems.map((item) => {
             const posterUrl = getPosterUrl(item.poster_url)
             return (
-              <div key={item.id} className="group relative">
+              <li key={item.id} className="group relative">
                 {/* Remove button (owner only) */}
                 {isOwner && (
                   <RemoveMovieButton
@@ -122,10 +164,10 @@ export default async function WatchlistDetailPage({ params }: WatchlistDetailPag
                     )}
                   </div>
                 </Link>
-              </div>
+              </li>
             )
           })}
-        </div>
+        </ul>
       )}
     </div>
   )

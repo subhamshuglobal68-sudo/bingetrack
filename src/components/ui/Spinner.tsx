@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 
 export function Spinner({ className }: { className?: string }) {
   return (
-    <div className={cn('flex items-center justify-center', className)}>
+    <div className={cn('flex items-center justify-center', className)} role="status" aria-label="Loading">
       <div
         className="h-8 w-8 animate-spin rounded-full"
         style={{
@@ -11,6 +11,7 @@ export function Spinner({ className }: { className?: string }) {
           WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px))',
         }}
       />
+      <span className="sr-only">Loading...</span>
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Avatar } from '@/components/ui/Avatar'
 import { WatchlistGrid } from '@/components/watchlists/WatchlistGrid'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { ProfileSchema } from '@/components/seo/JsonLd'
 import type { Metadata } from 'next'
 import type { WatchlistWithCount } from '@/types'
 
@@ -12,9 +13,30 @@ interface ProfilePageProps {
 
 export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
   const { username } = await params
+  const supabase = await createClient()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('username, full_name')
+    .eq('username', username)
+    .single()
+
+  const displayName = profile?.full_name ?? profile?.username ?? username
+
   return {
-    title: `@${username} — BingeTrack`,
-    description: `View ${username}'s public movie watchlists on BingeTrack.`,
+    title: `${displayName}'s Watchlists`,
+    description: `Browse ${displayName}'s public movie watchlists on BingeTrack.`,
+    openGraph: {
+      title: `${displayName}'s Watchlists — BingeTrack`,
+      description: `Browse ${displayName}'s public movie watchlists on BingeTrack.`,
+    },
+    twitter: {
+      card: 'summary',
+      title: `${displayName}'s Watchlists — BingeTrack`,
+      description: `Browse ${displayName}'s public movie watchlists on BingeTrack.`,
+    },
+    alternates: {
+      canonical: `https://bingetrack.vercel.app/u/${username}`,
+    },
   }
 }
 
@@ -43,6 +65,8 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
+      <ProfileSchema profile={profile} />
+
       {/* Profile header */}
       <div className="mb-10 flex items-center gap-5">
         <Avatar src={profile.avatar_url} name={profile.full_name} size={72} />
@@ -55,9 +79,14 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
       </div>
 
       {/* Watchlists */}
-      <section>
+      <section aria-labelledby="public-watchlists-heading">
         <div className="mb-6 flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-text-primary">Public Watchlists</h2>
+          <h2
+            id="public-watchlists-heading"
+            className="text-lg font-semibold text-text-primary"
+          >
+            Public Watchlists
+          </h2>
           <div className="h-px flex-1 bg-[#2a2520]" />
           <span className="text-sm text-text-secondary">
             {publicWatchlists.length} {publicWatchlists.length === 1 ? 'list' : 'lists'}

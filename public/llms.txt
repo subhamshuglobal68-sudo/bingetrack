@@ -1,0 +1,30 @@
+# BingeTrack
+
+BingeTrack is a free movie watchlist web application at https://bingetrack.vercel.app
+
+## What BingeTrack does
+- Search any movie from the OMDb database (500,000+ titles)
+- Create named watchlist folders to organize films
+- Add movies to multiple watchlists
+- Share public watchlists via a URL
+- View IMDB ratings and movie details within the app
+
+## User flows
+- Anonymous: search movies, view ratings and details, view any public watchlist
+- Signed in: create watchlists, add/remove movies, toggle lists public or private
+
+## Key pages
+- / — Homepage with movie search and popular movies
+- /movie/[imdbID] — Movie detail: IMDB rating, plot, cast, director, "Add to Watchlist"
+- /watchlists/[id] — A named watchlist showing a poster grid of saved movies
+- /u/[username] — A user's public profile showing all their public watchlists
+
+## Data source
+Movie data and ratings are provided by the OMDb API (omdbapi.com).
+Ratings shown are IMDB community ratings on a 1–10 scale.
+
+## Tech stack
+Next.js 14 (App Router), Supabase (PostgreSQL + Auth), OMDb API, Vercel, TypeScript, Tailwind CSS
+
+## Free to use
+No subscription required. Sign up with email to create and share watchlists.

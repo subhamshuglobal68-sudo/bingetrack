@@ -28,6 +28,10 @@ const nextConfig: NextConfig = {
         hostname: 'm.media-amazon.com',
       },
       {
+        protocol: 'http',
+        hostname: 'm.media-amazon.com',
+      },
+      {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
       },

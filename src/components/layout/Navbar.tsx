@@ -34,8 +34,15 @@ export function Navbar({ profile }: NavbarProps) {
         setDropdownOpen(false)
       }
     }
+    const escHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDropdownOpen(false)
+    }
     document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    document.addEventListener('keydown', escHandler)
+    return () => {
+      document.removeEventListener('mousedown', handler)
+      document.removeEventListener('keydown', escHandler)
+    }
   }, [])
 
   const handleSignOut = async () => {
@@ -47,12 +54,15 @@ export function Navbar({ profile }: NavbarProps) {
 
   return (
     <>
-    <nav className={cn(
-      'sticky top-0 z-40 border-b border-[#2a2520] transition-all duration-300',
-      scrolled
-        ? 'bg-[#0a0a0a] shadow-lg shadow-black/40'
-        : 'bg-[#0a0a0a]'
-    )}>
+    <nav
+      aria-label="Main navigation"
+      className={cn(
+        'sticky top-0 z-40 border-b border-[#2a2520] transition-all duration-300',
+        scrolled
+          ? 'bg-[#0a0a0a] shadow-lg shadow-black/40'
+          : 'bg-[#0a0a0a]'
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         {/* Logo */}
         <Link
@@ -61,7 +71,7 @@ export function Navbar({ profile }: NavbarProps) {
         >
           <Image
             src="/icon.png"
-            alt="BingeTrack logo"
+            alt="BingeTrack home"
             width={28}
             height={36}
             className="rounded-sm"
@@ -77,7 +87,7 @@ export function Navbar({ profile }: NavbarProps) {
               <button
                 onClick={() => setDropdownOpen(prev => !prev)}
                 className="flex items-center gap-2 rounded-full transition-transform hover:scale-105 cursor-pointer"
-                aria-label="User menu"
+                aria-label="Open user menu"
               >
                 <Avatar src={profile.avatar_url} name={profile.full_name} size={36} />
               </button>

@@ -7,10 +7,11 @@ import type { OMDbSearchResult } from '@/types'
 
 interface MovieSearchProps {
   onSearchActive?: (active: boolean) => void
+  initialQuery?: string
 }
 
-export function MovieSearch({ onSearchActive }: MovieSearchProps) {
-  const [query, setQuery] = useState('')
+export function MovieSearch({ onSearchActive, initialQuery }: MovieSearchProps) {
+  const [query, setQuery] = useState(initialQuery ?? '')
   const [results, setResults] = useState<OMDbSearchResult[]>([])
   const [loading, setLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
@@ -49,9 +50,13 @@ export function MovieSearch({ onSearchActive }: MovieSearchProps) {
     <div className="w-full" id="movie-search">
       {/* Search input */}
       <div className="relative max-w-2xl mx-auto">
+        <label htmlFor="search-input" className="sr-only">
+          Search for a movie
+        </label>
         <Search
           className="absolute left-5 top-1/2 -translate-y-1/2 text-text-secondary"
           size={20}
+          aria-hidden="true"
         />
         <input
           type="text"
@@ -75,6 +80,15 @@ export function MovieSearch({ onSearchActive }: MovieSearchProps) {
             <X size={18} />
           </button>
         )}
+      </div>
+
+      {/* Screen reader announcements */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {!loading && query && results.length > 0
+          ? `${results.length} movies found for "${query}"`
+          : !loading && query && results.length === 0 && hasSearched
+            ? `No movies found for "${query}"`
+            : ''}
       </div>
 
       {/* Results */}

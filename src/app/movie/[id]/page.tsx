@@ -1,27 +1,56 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 import { getMovieDetail, getPosterUrl, getYouTubeTrailerUrl } from '@/lib/omdb'
 import { createClient } from '@/lib/supabase/server'
 import { formatYear, formatRating, formatRuntime } from '@/lib/utils'
 import { AddToWatchlistButton } from '@/components/movies/AddToWatchlistButton'
-import { Star, Clock, Calendar, Clapperboard, ExternalLink, Film } from 'lucide-react'
+import { MovieSchema, BreadcrumbSchema } from '@/components/seo/JsonLd'
+import { Star, Clock, Calendar, Clapperboard, ExternalLink, Film, ChevronRight } from 'lucide-react'
 import type { Metadata } from 'next'
 
 interface MoviePageProps {
   params: Promise<{ id: string }>
 }
 
+function ensureHttps(url: string): string {
+  return url.replace(/^http:\/\//, 'https://')
+}
+
 export async function generateMetadata({ params }: MoviePageProps): Promise<Metadata> {
   const { id } = await params
   const movie = await getMovieDetail(id)
-  if (!movie) return { title: 'Movie Not Found — BingeTrack' }
+  if (!movie) return { title: 'Movie Not Found' }
+
+  const title = `${movie.Title} (${formatYear(movie.Year)})`
+  const description =
+    movie.Plot && movie.Plot !== 'N/A'
+      ? movie.Plot.slice(0, 155)
+      : `Track ${movie.Title} on BingeTrack. Add it to your watchlist.`
+  const image =
+    movie.Poster && movie.Poster !== 'N/A' ? ensureHttps(movie.Poster) : null
+
   return {
-    title: `${movie.Title} (${formatYear(movie.Year)}) — BingeTrack`,
-    description: movie.Plot?.slice(0, 160),
+    title,
+    description,
     openGraph: {
-      title: `${movie.Title} (${formatYear(movie.Year)})`,
-      description: movie.Plot?.slice(0, 200),
-      type: 'website',
+      title,
+      description,
+      type: 'video.movie',
+      ...(image && {
+        images: [
+          { url: image, width: 300, height: 445, alt: `${movie.Title} poster` },
+        ],
+      }),
+    },
+    twitter: {
+      card: image ? 'summary_large_image' : 'summary',
+      title,
+      description,
+      ...(image && { images: [image] }),
+    },
+    alternates: {
+      canonical: `https://bingetrack.vercel.app/movie/${id}`,
     },
   }
 }
@@ -42,10 +71,43 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
   return (
     <div className="relative">
+      <MovieSchema movie={movie} />
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: 'https://bingetrack.vercel.app' },
+          {
+            name: movie.Title,
+            url: `https://bingetrack.vercel.app/movie/${movie.imdbID}`,
+          },
+        ]}
+      />
+
       {/* Cinematic backdrop gradient */}
       <div className="absolute inset-0 -z-10 bg-gradient-cinematic-backdrop" />
 
       <div className="relative mx-auto max-w-5xl px-4 py-12">
+        {/* Breadcrumb navigation */}
+        <nav aria-label="Breadcrumb" className="mb-6 animate-fade-in-up">
+          <ol className="flex items-center gap-1.5 text-sm text-text-secondary">
+            <li>
+              <Link
+                href="/"
+                className="hover:text-accent transition-colors"
+              >
+                Home
+              </Link>
+            </li>
+            <li aria-hidden="true">
+              <ChevronRight size={14} />
+            </li>
+            <li>
+              <span className="text-text-primary" aria-current="page">
+                {movie.Title}
+              </span>
+            </li>
+          </ol>
+        </nav>
+
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
           {/* Poster */}
           <div className="flex-shrink-0 mx-auto md:mx-0 animate-fade-in-up">
@@ -55,6 +117,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
                   src={posterUrl}
                   alt={movie.Title}
                   fill
+                  sizes="280px"
                   className="object-cover"
                   priority
                 />
@@ -96,22 +159,25 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
             {/* Genre */}
             {movie.Genre && movie.Genre !== 'N/A' && (
-              <div className="flex flex-wrap gap-2">
-                {movie.Genre.split(', ').map(genre => (
-                  <span
+              <ul aria-label="Genres" className="flex flex-wrap gap-2">
+                {movie.Genre.split(', ').map((genre) => (
+                  <li
                     key={genre}
                     className="rounded-full bg-surface-2 px-3 py-1 text-xs font-medium text-text-secondary border border-[#2a2520]"
                   >
                     {genre}
-                  </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
 
             {/* Rating */}
             {imdbRating !== 'N/A' && (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 rounded-xl bg-surface border border-[#2a2520] px-4 py-3">
+                <div
+                  className="flex items-center gap-2 rounded-xl bg-surface border border-[#2a2520] px-4 py-3"
+                  aria-label={`IMDB rating: ${imdbRating} out of 10`}
+                >
                   <Star
                     size={22}
                     className="text-rating"

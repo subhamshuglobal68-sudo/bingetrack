@@ -13,7 +13,9 @@ interface ModalProps {
 
 export function Modal({ isOpen, onClose, title, children, className }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
 
+  // Escape key + body scroll lock
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -28,6 +30,35 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
     }
   }, [isOpen, onClose])
 
+  // Focus trap
+  useEffect(() => {
+    if (!isOpen) return
+    const focusable = modalRef.current?.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    const first = focusable?.[0]
+    const last = focusable?.[focusable.length - 1]
+
+    const trap = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault()
+          last?.focus()
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault()
+          first?.focus()
+        }
+      }
+    }
+
+    first?.focus()
+    document.addEventListener('keydown', trap)
+    return () => document.removeEventListener('keydown', trap)
+  }, [isOpen])
+
   if (!isOpen) return null
 
   return (
@@ -39,6 +70,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
       }}
     >
       <div
+        ref={modalRef}
         className={cn(
           'w-full max-w-md rounded-2xl bg-surface border border-[#2a2520] border-t-2 border-t-[#d4a853] p-6 shadow-2xl animate-modal-enter',
           className
@@ -54,7 +86,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
           <button
             onClick={onClose}
             className="rounded-lg p-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors cursor-pointer"
-            aria-label="Close modal"
+            aria-label="Close"
           >
             <X size={18} />
           </button>

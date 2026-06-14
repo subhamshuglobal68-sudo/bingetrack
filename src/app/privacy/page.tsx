@@ -2,8 +2,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — BingeTrack',
-  description: 'How BingeTrack collects, uses, and protects your data.',
+  title: 'Privacy Policy',
+  description:
+    'Read the BingeTrack privacy policy. How we collect, use, and protect your data.',
+  robots: { index: true, follow: true },
+  alternates: {
+    canonical: 'https://bingetrack.vercel.app/privacy',
+  },
 }
 
 export default function PrivacyPage() {

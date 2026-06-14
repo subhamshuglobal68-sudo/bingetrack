@@ -55,6 +55,7 @@ credentials*.json
 *COLOR-PALETTE*.md
 *DESIGN*.md
 *UI-SPEC*.md
+SEO-ACCESSIBILITY-REPORT.md
 .planning/
 
 # vercel

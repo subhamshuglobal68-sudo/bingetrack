@@ -25,12 +25,19 @@ export function CreateWatchlistModal({ isOpen, onClose }: CreateWatchlistModalPr
     if (!name.trim()) return
 
     setLoading(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      showToast('You must be signed in', 'error')
+      setLoading(false)
+      return
+    }
     const { data, error } = await supabase
       .from('watchlists')
       .insert({
         name: name.trim(),
         description: description.trim() || null,
         is_public: isPublic,
+        user_id: user.id,
       })
       .select()
       .single()

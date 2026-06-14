@@ -96,9 +96,15 @@ export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButton
     if (!newName.trim()) return
     setLoading(true)
     const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      showToast('You must be signed in', 'error')
+      setLoading(false)
+      return
+    }
     const { data: list, error } = await supabase
       .from('watchlists')
-      .insert({ name: newName.trim(), is_public: true })
+      .insert({ name: newName.trim(), is_public: true, user_id: user.id })
       .select()
       .single()
     if (error || !list) {

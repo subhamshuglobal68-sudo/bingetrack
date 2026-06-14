@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -39,10 +40,20 @@ export async function GET(request: Request) {
     )
   }
 
-  // Password recovery — redirect to the reset password page instead of the default
-  if (type === 'recovery') {
-    return NextResponse.redirect(new URL('/reset-password', requestUrl.origin))
+  // Build the redirect URL
+  const redirectUrl = type === 'recovery'
+    ? new URL('/reset-password', requestUrl.origin)
+    : new URL(redirectTo, requestUrl.origin)
+
+  const response = NextResponse.redirect(redirectUrl)
+
+  // Carry session cookies from the cookie store onto the redirect response
+  // exchangeCodeForSession writes cookies to the server-side cookie store,
+  // but NextResponse.redirect() creates a fresh response that doesn't inherit them.
+  const cookieStore = await cookies()
+  for (const cookie of cookieStore.getAll()) {
+    response.cookies.set(cookie.name, cookie.value)
   }
 
-  return NextResponse.redirect(new URL(redirectTo, requestUrl.origin))
+  return response
 }

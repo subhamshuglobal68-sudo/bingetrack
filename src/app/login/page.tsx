@@ -21,11 +21,15 @@ function LoginForm() {
   const [success, setSuccess] = useState('')
 
   const getFriendlyError = (message: string) => {
+    console.error('[Auth Error]', message)
     if (message.includes('Invalid login credentials')) return 'Invalid email or password.'
-    if (message.includes('already registered')) return 'An account with this email already exists.'
+    if (message.includes('already registered') || message.includes('User already registered')) return 'An account with this email already exists. If you recently deleted this account, please wait a few minutes or contact support.'
     if (message.includes('Email not confirmed')) return 'Please confirm your email before signing in.'
     if (message.includes('Password should be at least')) return 'Password must be at least 6 characters.'
     if (message.includes('Unable to validate email address')) return 'Please enter a valid email address.'
+    if (message.includes('Database error saving new user')) return 'An account with this email may already exist. If you recently deleted this account, please wait a few minutes and try again.'
+    if (message.includes('signup is disabled')) return 'Sign-ups are currently disabled.'
+    if (message.includes('rate limit')) return 'Too many attempts. Please try again later.'
     return 'Something went wrong. Please try again.'
   }
 

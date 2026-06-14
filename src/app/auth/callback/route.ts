@@ -17,6 +17,7 @@ export async function GET(request: Request) {
 
   // Handle auth errors from Supabase (e.g., expired/invalid link)
   if (error) {
+    console.error('[Auth Callback Error]', error, errorDescription)
     return NextResponse.redirect(
       new URL(`/login?error=${encodeURIComponent(errorDescription ?? error)}`, requestUrl.origin)
     )
@@ -32,12 +33,31 @@ export async function GET(request: Request) {
   const supabase = await createClient()
 
   // Exchange the authorization code for a session
-  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+  const { data: { user }, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
   if (exchangeError) {
+    console.error('[Auth Callback] Code exchange failed:', exchangeError.message)
     return NextResponse.redirect(
       new URL(`/login?error=${encodeURIComponent('Invalid or expired link. Please try again.')}`, requestUrl.origin)
     )
+  }
+
+  // Auto-create profile if it doesn't exist (handles first-time signup)
+  if (user) {
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .upsert(
+        {
+          id: user.id,
+          username: user.email?.split('@')[0] ?? `user_${user.id.slice(0, 8)}`,
+          full_name: null,
+          avatar_url: null,
+        },
+        { onConflict: 'id' }
+      )
+    if (profileError) {
+      console.error('[Auth Callback] Profile upsert failed:', profileError.message)
+    }
   }
 
   // Build the redirect URL
@@ -52,7 +72,10 @@ export async function GET(request: Request) {
   // but NextResponse.redirect() creates a fresh response that doesn't inherit them.
   const cookieStore = await cookies()
   for (const cookie of cookieStore.getAll()) {
-    response.cookies.set(cookie.name, cookie.value)
+    // Only copy Supabase auth cookies (prefixed with sb-)
+    if (cookie.name.startsWith('sb-')) {
+      response.cookies.set(cookie.name, cookie.value)
+    }
   }
 
   return response

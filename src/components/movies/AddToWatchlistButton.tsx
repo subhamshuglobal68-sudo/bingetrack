@@ -121,7 +121,7 @@ export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButton
         </Button>
 
         {open && (
-          <div className="absolute left-0 top-full z-30 mt-2 w-72 rounded-xl border border-border bg-surface shadow-2xl overflow-hidden">
+          <div className="absolute left-0 top-full z-30 mt-2 w-72 rounded-xl border border-[#2a2520] bg-surface shadow-2xl overflow-hidden">
             {watchlists.length === 0 ? (
               <p className="px-4 py-4 text-sm text-text-secondary text-center">
                 No lists yet — create one below
@@ -143,7 +143,7 @@ export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButton
                 ))}
               </div>
             )}
-            <hr className="border-border" />
+            <hr className="border-[#2a2520]" />
             {creating ? (
               <div className="p-3">
                 <input
@@ -153,7 +153,7 @@ export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButton
                   onKeyDown={e => e.key === 'Enter' && createAndAdd()}
                   placeholder="List name..."
                   maxLength={100}
-                  className="mb-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors"
+                  className="mb-2 w-full rounded-lg border border-[#2a2520] bg-background px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-[#d4a853] transition-colors"
                 />
                 <div className="flex gap-2">
                   <Button
@@ -176,7 +176,7 @@ export function AddToWatchlistButton({ movie, isLoggedIn }: AddToWatchlistButton
             ) : (
               <button
                 onClick={() => setCreating(true)}
-                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-accent hover:bg-surface-2 transition-colors cursor-pointer"
+                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-[#d4a853] hover:bg-surface-2 transition-colors cursor-pointer"
               >
                 <Plus size={14} /> New Watchlist
               </button>

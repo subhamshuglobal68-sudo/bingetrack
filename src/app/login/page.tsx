@@ -55,16 +55,19 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
+    <div className="relative flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
+      {/* Background gradient */}
+      <div className="absolute inset-0 -z-10 bg-gradient-surface" />
+
       <div className="w-full max-w-sm">
-        <div className="rounded-2xl border border-border bg-surface p-8 shadow-2xl text-center">
+        <div className="animate-modal-enter rounded-2xl border border-[#2a2520] border-t-2 border-t-[#d4a853] bg-surface p-8 shadow-2xl text-center">
           <div className="mb-6 flex justify-center">
-            <div className="rounded-2xl bg-accent/10 p-4">
-              <Film size={40} className="text-accent" strokeWidth={2} />
+            <div className="rounded-2xl bg-[#d4a853]/10 p-4">
+              <Film size={40} className="text-[#d4a853]" strokeWidth={2} />
             </div>
           </div>
 
-          <h1 className="mb-2 text-2xl font-bold tracking-tight text-text-primary">
+          <h1 className="mb-2 text-2xl font-bold tracking-tight text-text-primary font-display">
             Welcome to BingeTrack
           </h1>
           <p className="mb-8 text-sm text-text-secondary leading-relaxed">
@@ -99,12 +102,12 @@ function LoginForm() {
 
           {/* Error / Success */}
           {error && (
-            <div className="mb-4 rounded-lg bg-red-950/50 border border-red-800/30 px-4 py-3 text-sm text-red-400">
+            <div className="mb-4 rounded-lg bg-[#2a1a10]/50 border border-[#c44040]/30 px-4 py-3 text-sm text-[#e88080]">
               {error}
             </div>
           )}
           {success && (
-            <div className="mb-4 rounded-lg bg-green-950/50 border border-green-800/30 px-4 py-3 text-sm text-green-400">
+            <div className="mb-4 rounded-lg bg-[#1a1a10]/50 border border-[#4a9e6e]/30 px-4 py-3 text-sm text-[#6abe8e]">
               {success}
             </div>
           )}
@@ -118,7 +121,7 @@ function LoginForm() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="Email"
                 required
-                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full rounded-lg border border-[#2a2520] bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853] focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 transition-all"
               />
             </div>
             <div>
@@ -129,7 +132,7 @@ function LoginForm() {
                 placeholder="Password"
                 required
                 minLength={6}
-                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
+                className="w-full rounded-lg border border-[#2a2520] bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853] focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 transition-all"
               />
             </div>
             <Button
@@ -155,7 +158,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2a2520] border-t-[#d4a853]" />
         </div>
       }
     >

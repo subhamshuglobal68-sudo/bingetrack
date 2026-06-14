@@ -73,7 +73,7 @@ export default async function WatchlistDetailPage({ params }: WatchlistDetailPag
           action={
             <Link
               href="/"
-              className="rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-accent/20 hover:bg-accent-hover transition-all"
+              className="rounded-lg bg-gradient-accent px-5 py-2.5 text-sm font-medium text-[#0a0a0a] font-semibold shadow-lg shadow-[#d4a853]/20 hover:shadow-[#d4a853]/30 transition-all"
             >
               Browse Movies
             </Link>
@@ -95,7 +95,7 @@ export default async function WatchlistDetailPage({ params }: WatchlistDetailPag
                 )}
 
                 <Link href={`/movie/${item.imdb_id}`} className="block">
-                  <div className="relative overflow-hidden rounded-xl bg-surface aspect-[2/3] ring-1 ring-border group-hover:ring-accent/50 transition-all duration-300">
+                  <div className="relative overflow-hidden rounded-xl bg-surface aspect-[2/3] border border-[#2a2520] shadow-lg shadow-black/40 group-hover:border-[#3a3228] transition-all duration-300">
                     {posterUrl ? (
                       <Image
                         src={posterUrl}
@@ -112,7 +112,7 @@ export default async function WatchlistDetailPage({ params }: WatchlistDetailPag
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                   <div className="mt-2.5 px-0.5">
-                    <p className="truncate text-sm font-medium text-text-primary group-hover:text-accent transition-colors">
+                    <p className="truncate text-sm font-medium text-text-primary group-hover:text-[#d4a853] transition-colors">
                       {item.title}
                     </p>
                     {item.release_year && (

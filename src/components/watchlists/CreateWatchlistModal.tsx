@@ -57,7 +57,7 @@ export function CreateWatchlistModal({ isOpen, onClose }: CreateWatchlistModalPr
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1.5">
-              Name <span className="text-accent">*</span>
+              Name <span className="text-[#d4a853]">*</span>
             </label>
             <input
               value={name}
@@ -66,7 +66,7 @@ export function CreateWatchlistModal({ isOpen, onClose }: CreateWatchlistModalPr
               placeholder="e.g. Horror Classics"
               autoFocus
               maxLength={100}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-accent transition-colors"
+              className="w-full rounded-lg border border-[#2a2520] bg-background px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-[#d4a853] transition-colors"
             />
           </div>
 
@@ -81,7 +81,7 @@ export function CreateWatchlistModal({ isOpen, onClose }: CreateWatchlistModalPr
               placeholder="What's this list about? (optional)"
               rows={3}
               maxLength={500}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-accent transition-colors resize-none"
+              className="w-full rounded-lg border border-[#2a2520] bg-background px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:border-[#d4a853] transition-colors resize-none"
             />
           </div>
 
@@ -96,8 +96,8 @@ export function CreateWatchlistModal({ isOpen, onClose }: CreateWatchlistModalPr
                 onClick={() => setIsPublic(true)}
                 className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all cursor-pointer ${
                   isPublic
-                    ? 'border-accent bg-accent/10 text-accent'
-                    : 'border-border text-text-secondary hover:bg-surface-2'
+                    ? 'border-[#d4a853] bg-[#d4a853]/10 text-[#d4a853]'
+                    : 'border-[#2a2520] text-text-secondary hover:bg-surface-2'
                 }`}
               >
                 <Globe size={14} /> Public
@@ -107,8 +107,8 @@ export function CreateWatchlistModal({ isOpen, onClose }: CreateWatchlistModalPr
                 onClick={() => setIsPublic(false)}
                 className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all cursor-pointer ${
                   !isPublic
-                    ? 'border-accent bg-accent/10 text-accent'
-                    : 'border-border text-text-secondary hover:bg-surface-2'
+                    ? 'border-[#d4a853] bg-[#d4a853]/10 text-[#d4a853]'
+                    : 'border-[#2a2520] text-text-secondary hover:bg-surface-2'
                 }`}
               >
                 <Lock size={14} /> Private

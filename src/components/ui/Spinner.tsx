@@ -3,7 +3,14 @@ import { cn } from '@/lib/utils'
 export function Spinner({ className }: { className?: string }) {
   return (
     <div className={cn('flex items-center justify-center', className)}>
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent" />
+      <div
+        className="h-8 w-8 animate-spin rounded-full"
+        style={{
+          background: 'conic-gradient(from 0deg, transparent 0%, transparent 70%, #d4a853 100%)',
+          mask: 'radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px))',
+          WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px))',
+        }}
+      />
     </div>
   )
 }

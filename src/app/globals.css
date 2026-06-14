@@ -28,15 +28,32 @@
   --gradient-glow-accent: radial-gradient(ellipse at center, rgba(212, 168, 83, 0.12) 0%, transparent 70%);
   --gradient-cinematic-backdrop: linear-gradient(to top, #0a0a0a 0%, rgba(10, 10, 10, 0.85) 35%, transparent 100%);
   --gradient-curtain: radial-gradient(ellipse at 50% 0%, rgba(212, 168, 83, 0.06) 0%, transparent 60%);
+  --gradient-projector-cone: conic-gradient(from 258deg at 50% 0%, transparent 0deg, rgba(212, 168, 83, 0.03) 12deg, rgba(212, 168, 83, 0.05) 24deg, rgba(212, 168, 83, 0.03) 36deg, transparent 48deg);
+  --gradient-anamorphic: radial-gradient(ellipse 120% 0.3% at 50% 50%, rgba(212, 168, 83, 0.06) 0%, rgba(232, 192, 106, 0.04) 40%, transparent 100%);
 }
+
+/* ── Z-Index Scale ──
+   0        Background gradient layers (body gradients, static washes)
+   1-10     Background texture overlays (grain, noise, spotlights)
+   10-100   Content surfaces (cards, nav, main content)
+   100-200  Floating elements (dropdowns, tooltips)
+   200-500  Overlay elements (modals, sidebars)
+   500-1000 System-level (toasts, notifications)
+*/
 
 /* ── Base reset ── */
 * {
   border-color: var(--color-border);
 }
 
+/* ── The Screening Room background ── */
 body {
   background:
+    /* Velvet depth — corner shadows like heavy curtains */
+    radial-gradient(ellipse 50% 50% at 0% 0%, rgba(10, 8, 6, 0.6) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 100% 0%, rgba(10, 8, 6, 0.5) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 0% 100%, rgba(10, 8, 6, 0.4) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(10, 8, 6, 0.4) 0%, transparent 55%),
     /* Vignette — dark edges, neutral center */
     radial-gradient(
       ellipse 75% 65% at 50% 50%,
@@ -44,24 +61,12 @@ body {
       rgba(0, 0, 0, 0.0) 50%,
       rgba(0, 0, 0, 0.5) 100%
     ),
-    /* Spotlight 1 — top center, warm gold (key light) */
+    /* Screen glow — soft central light pool */
     radial-gradient(
-      ellipse 40% 35% at 50% 8%,
-      rgba(212, 168, 83, 0.05) 0%,
-      rgba(212, 168, 83, 0.015) 40%,
-      transparent 70%
-    ),
-    /* Spotlight 2 — bottom-left, subtle fill light */
-    radial-gradient(
-      ellipse 35% 40% at 18% 85%,
-      rgba(180, 140, 60, 0.025) 0%,
-      transparent 60%
-    ),
-    /* Spotlight 3 — right edge, kick light */
-    radial-gradient(
-      ellipse 25% 45% at 92% 50%,
-      rgba(200, 155, 70, 0.015) 0%,
-      transparent 60%
+      ellipse 60% 50% at 50% 40%,
+      rgba(212, 168, 83, 0.025) 0%,
+      rgba(212, 168, 83, 0.008) 50%,
+      transparent 80%
     ),
     /* Base */
     var(--color-background);
@@ -69,21 +74,39 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  animation: spotlightSweep 30s ease-in-out infinite;
 }
 
+/* ── Projector light cone — conic beam from above ── */
+body::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200%;
+  height: 200%;
+  background: var(--gradient-projector-cone);
+  pointer-events: none;
+  z-index: 1;
+  animation: projectorSway 45s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ── Anamorphic streak — cinematic horizontal gold line ── */
 body::after {
   content: '';
   position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1000px;
-  height: 700px;
-  background: radial-gradient(ellipse, rgba(212, 168, 83, 0.1) 0%, transparent 70%);
+  top: calc(50% - 1px);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-anamorphic);
+  filter: blur(0.5px);
   pointer-events: none;
-  z-index: 0;
-  animation: breathe 8s ease-in-out infinite;
+  z-index: 1;
+  opacity: 0.7;
+  animation: anamorphicDrift 60s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* ── Film grain overlay ── */
@@ -91,11 +114,28 @@ body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
   pointer-events: none;
-  z-index: 1000;
+  z-index: 10;
   opacity: 0.5;
   mix-blend-mode: overlay;
+}
+
+/* ── Secondary grain — radial stripes (film reel feel) ── */
+.film-grain::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-conic-gradient(
+    rgba(212, 168, 83, 0.008) 0deg,
+    transparent 1deg,
+    transparent 3deg,
+    rgba(212, 168, 83, 0.005) 4deg
+  );
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.4;
+  mix-blend-mode: soft-light;
 }
 
 /* ── Warm spotlight from above ── */
@@ -104,11 +144,80 @@ body::after {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 800px;
-  height: 600px;
-  background: radial-gradient(ellipse, rgba(212, 168, 83, 0.12) 0%, transparent 70%);
+  width: 900px;
+  height: 650px;
+  background: radial-gradient(
+    ellipse 45% 40% at 50% 0%,
+    rgba(212, 168, 83, 0.1) 0%,
+    rgba(212, 168, 83, 0.03) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 1;
+  animation: breathe 8s ease-in-out infinite;
+}
+
+/* ── Dust motes — floating particles in projector beam ── */
+.dust-motes {
+  position: fixed;
+  inset: 0;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow:
+    120vw 20vh 0 0.5px rgba(212, 168, 83, 0.15),
+    30vw 60vh 0 0.3px rgba(212, 168, 83, 0.12),
+    70vw 35vh 0 0.4px rgba(232, 192, 106, 0.1),
+    45vw 80vh 0 0.5px rgba(212, 168, 83, 0.14),
+    85vw 15vh 0 0.3px rgba(200, 155, 70, 0.11),
+    15vw 45vh 0 0.4px rgba(212, 168, 83, 0.13),
+    60vw 70vh 0 0.5px rgba(232, 192, 106, 0.12),
+    95vw 50vh 0 0.3px rgba(212, 168, 83, 0.1),
+    25vw 25vh 0 0.4px rgba(200, 155, 70, 0.14),
+    80vw 85vh 0 0.5px rgba(212, 168, 83, 0.11),
+    50vw 10vh 0 0.3px rgba(232, 192, 106, 0.13);
+  animation: dustDrift 25s linear infinite;
+  will-change: transform;
+}
+
+/* ── Ambient warmth pools ── */
+.warm-spotlight::before {
+  content: '';
+  position: fixed;
+  bottom: 10%;
+  left: 15%;
+  width: 400px;
+  height: 350px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(180, 140, 60, 0.03) 0%,
+    transparent 60%
+  );
   pointer-events: none;
   z-index: 0;
+  animation: warmthPoolDrift 20s ease-in-out infinite;
+  will-change: transform;
+}
+
+.warm-spotlight::after {
+  content: '';
+  position: fixed;
+  top: 20%;
+  right: 8%;
+  width: 350px;
+  height: 300px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(200, 155, 70, 0.02) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: warmthPoolDrift 20s ease-in-out infinite reverse;
+  will-change: transform;
 }
 
 /* ── Letterbox bars ── */
@@ -209,21 +318,35 @@ body::after {
   50% { box-shadow: 0 0 30px rgba(212, 168, 83, 0.2); }
 }
 
-@keyframes spotlightSweep {
-  0%, 100% {
-    background-position: 50% 50%, 50% 8%, 18% 85%, 92% 50%, 0% 0%;
-  }
-  33% {
-    background-position: 50% 50%, 45% 12%, 22% 80%, 88% 55%, 0% 0%;
-  }
-  66% {
-    background-position: 50% 50%, 55% 6%, 15% 88%, 95% 45%, 0% 0%;
-  }
+@keyframes breathe {
+  0%, 100% { opacity: 0.06; }
+  50% { opacity: 0.12; }
 }
 
-@keyframes breathe {
-  0%, 100% { opacity: 0.08; }
-  50% { opacity: 0.14; }
+@keyframes projectorSway {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  25% { transform: translateX(-48%) rotate(1.5deg); }
+  50% { transform: translateX(-52%) rotate(-1deg); }
+  75% { transform: translateX(-50%) rotate(0.5deg); }
+}
+
+@keyframes anamorphicDrift {
+  0%, 100% { transform: translateX(-5%); }
+  50% { transform: translateX(5%); }
+}
+
+@keyframes dustDrift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-8px, -12px); }
+  50% { transform: translate(5px, -6px); }
+  75% { transform: translate(-3px, 8px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes warmthPoolDrift {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(12px, -8px); }
+  66% { transform: translate(-8px, 6px); }
 }
 
 /* ── Reduced motion ── */
@@ -233,8 +356,12 @@ body::after {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  body { animation: none; }
-  body::after { animation: none; opacity: 0.1; }
+  body::before { animation: none; opacity: 0.03; }
+  body::after { animation: none; opacity: 0.04; }
+  .warm-spotlight { animation: none; opacity: 0.08; }
+  .warm-spotlight::before,
+  .warm-spotlight::after { animation: none; }
+  .dust-motes { animation: none; opacity: 0; }
 }
 
 /* ── Animation utilities ── */

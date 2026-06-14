@@ -47,6 +47,7 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="film-grain flex min-h-screen flex-col bg-background antialiased font-sans">
         <div className="warm-spotlight" />
+        <div className="dust-motes" />
         <Navbar profile={profile} />
         <main className="flex-1">{children}</main>
         <Footer />

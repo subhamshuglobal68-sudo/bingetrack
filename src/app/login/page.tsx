@@ -13,7 +13,7 @@ function LoginForm() {
     : '/watchlists'
   const supabase = createClient()
 
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -35,7 +35,17 @@ function LoginForm() {
     setSuccess('')
     setLoading(true)
 
-    if (mode === 'signup') {
+    if (mode === 'forgot') {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+      })
+      setLoading(false)
+      if (error) {
+        setError(getFriendlyError(error.message))
+      } else {
+        setSuccess('Check your email for a password reset link.')
+      }
+    } else if (mode === 'signup') {
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -77,37 +87,41 @@ function LoginForm() {
           </div>
 
           <h1 className="mb-2 text-2xl font-bold tracking-tight text-text-primary font-display">
-            Welcome to BingeTrack
+            {mode === 'forgot' ? 'Reset Password' : 'Welcome to BingeTrack'}
           </h1>
           <p className="mb-8 text-sm text-text-secondary leading-relaxed">
             {mode === 'signin'
               ? 'Sign in to create and manage your movie watchlists.'
-              : 'Create an account to start tracking movies.'}
+              : mode === 'signup'
+                ? 'Create an account to start tracking movies.'
+                : 'Enter your email and we\'ll send you a reset link.'}
           </p>
 
-          {/* Mode toggle */}
-          <div className="mb-6 flex rounded-lg bg-background p-1">
-            <button
-              onClick={() => { setMode('signin'); setError(''); setSuccess('') }}
-              className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors cursor-pointer ${
-                mode === 'signin'
-                  ? 'bg-surface text-text-primary shadow-sm'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => { setMode('signup'); setError(''); setSuccess('') }}
-              className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors cursor-pointer ${
-                mode === 'signup'
-                  ? 'bg-surface text-text-primary shadow-sm'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Sign Up
-            </button>
-          </div>
+          {/* Mode toggle — hidden in forgot mode */}
+          {mode !== 'forgot' && (
+            <div className="mb-6 flex rounded-lg bg-background p-1">
+              <button
+                onClick={() => { setMode('signin'); setError(''); setSuccess('') }}
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors cursor-pointer ${
+                  mode === 'signin'
+                    ? 'bg-surface text-text-primary shadow-sm'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => { setMode('signup'); setError(''); setSuccess('') }}
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors cursor-pointer ${
+                  mode === 'signup'
+                    ? 'bg-surface text-text-primary shadow-sm'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
 
           {/* Error / Success */}
           {error && (
@@ -133,25 +147,51 @@ function LoginForm() {
                 className="w-full rounded-lg border border-[#2a2520] bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853] focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 transition-all"
               />
             </div>
-            <div>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                minLength={6}
-                className="w-full rounded-lg border border-[#2a2520] bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853] focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 transition-all"
-              />
-            </div>
+            {mode !== 'forgot' && (
+              <div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Password"
+                  required
+                  minLength={6}
+                  className="w-full rounded-lg border border-[#2a2520] bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853] focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 transition-all"
+                />
+              </div>
+            )}
             <Button
               type="submit"
               className="w-full py-3"
               isLoading={loading}
             >
-              {mode === 'signin' ? 'Sign In' : 'Create Account'}
+              {mode === 'signin'
+                ? 'Sign In'
+                : mode === 'signup'
+                  ? 'Create Account'
+                  : 'Send Reset Link'}
             </Button>
           </form>
+
+          {/* Forgot password link — only in signin mode */}
+          {mode === 'signin' && (
+            <button
+              onClick={() => { setMode('forgot'); setError(''); setSuccess('') }}
+              className="mt-4 text-xs text-text-secondary hover:text-[#d4a853] transition-colors cursor-pointer"
+            >
+              Forgot password?
+            </button>
+          )}
+
+          {/* Back to sign in — only in forgot mode */}
+          {mode === 'forgot' && (
+            <button
+              onClick={() => { setMode('signin'); setError(''); setSuccess('') }}
+              className="mt-4 text-xs text-text-secondary hover:text-[#d4a853] transition-colors cursor-pointer"
+            >
+              Back to sign in
+            </button>
+          )}
         </div>
 
         <p className="mt-6 text-center text-xs text-text-secondary">

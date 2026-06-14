@@ -9,6 +9,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ results: [] })
   }
 
+  if (q.length > 200) {
+    return NextResponse.json({ results: [] })
+  }
+
   try {
     const results = await searchMovies(q)
     return NextResponse.json({ results })

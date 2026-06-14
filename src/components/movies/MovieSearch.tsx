@@ -59,6 +59,7 @@ export function MovieSearch({ onSearchActive }: MovieSearchProps) {
           onChange={e => setQuery(e.target.value)}
           placeholder="Search for a movie..."
           id="search-input"
+          maxLength={200}
           className="w-full rounded-2xl border border-[#2a2520] bg-surface py-4 pl-14 pr-14 text-lg text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853]/50 focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 focus:shadow-[0_0_20px_rgba(212,168,83,0.1)] transition-all duration-300 shadow-lg shadow-black/20"
         />
         {query && (

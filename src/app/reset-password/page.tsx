@@ -79,6 +79,7 @@ export default function ResetPasswordPage() {
                 placeholder="New password"
                 required
                 minLength={6}
+                maxLength={128}
                 className="w-full rounded-lg border border-[#2a2520] bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853] focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 transition-all"
               />
             </div>
@@ -90,6 +91,7 @@ export default function ResetPasswordPage() {
                 placeholder="Confirm new password"
                 required
                 minLength={6}
+                maxLength={128}
                 className="w-full rounded-lg border border-[#2a2520] bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853] focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 transition-all"
               />
             </div>

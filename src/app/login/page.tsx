@@ -148,6 +148,7 @@ function LoginForm() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="Email"
                 required
+                maxLength={254}
                 className="w-full rounded-lg border border-[#2a2520] bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853] focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 transition-all"
               />
             </div>
@@ -160,6 +161,7 @@ function LoginForm() {
                   placeholder="Password"
                   required
                   minLength={6}
+                  maxLength={128}
                   className="w-full rounded-lg border border-[#2a2520] bg-background px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/60 focus:border-[#d4a853] focus:outline-none focus:ring-2 focus:ring-[#d4a853]/20 transition-all"
                 />
               </div>

@@ -58,11 +58,10 @@ function LoginForm() {
 
     if (mode === 'forgot') {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
       })
       setLoading(false)
       if (error) {
-        console.error('[Forgot Error]', error.message)
         setError(getFriendlyError(error.message))
       } else {
         setCooldown(60)

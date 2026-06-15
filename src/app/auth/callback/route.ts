@@ -30,35 +30,20 @@ export async function GET(request: Request) {
     )
   }
 
+  // Recovery (password reset) flows go through SendGrid which mangles query params,
+  // so the `type` parameter may be missing or unreliable. Always redirect recovery
+  // and unknown flows to the client page for client-side PKCE exchange, where the
+  // code verifier is accessible from browser cookies/localStorage.
+  if (type === 'recovery' || type === null) {
+    return NextResponse.redirect(
+      new URL(`/reset-password?code=${code}`, requestUrl.origin)
+    )
+  }
+
   const supabase = await createClient()
 
   // Exchange the authorization code for a session
   const { data: { user }, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
-
-  // Recovery (password reset) flow
-  if (type === 'recovery') {
-    // If server-side exchange failed (e.g., PKCE verifier not in cookies),
-    // redirect to the client page so the browser client can exchange the code
-    // using localStorage where the verifier was stored by resetPasswordForEmail().
-    if (exchangeError) {
-      console.warn('[Auth Callback] Server-side PKCE exchange failed for recovery, falling back to client-side:', exchangeError.message)
-      return NextResponse.redirect(
-        new URL(`/reset-password?code=${code}`, requestUrl.origin)
-      )
-    }
-    // Server-side exchange succeeded — redirect to reset-password page
-    // (no ?code= param needed; user already has a session from the exchange).
-    const redirectUrl = new URL('/reset-password', requestUrl.origin)
-    const response = NextResponse.redirect(redirectUrl)
-    // Carry session cookies onto the redirect response.
-    const cookieStore = await cookies()
-    for (const cookie of cookieStore.getAll()) {
-      if (cookie.name.startsWith('sb-')) {
-        response.cookies.set(cookie.name, cookie.value)
-      }
-    }
-    return response
-  }
 
   if (exchangeError) {
     console.error('[Auth Callback] Code exchange failed:', exchangeError.message)

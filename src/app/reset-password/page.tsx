@@ -12,15 +12,26 @@ function ResetPasswordForm() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(() => code ? '' : 'No reset code found. Please request a new password reset link.')
+  const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [exchanging, setExchanging] = useState(true)
+  const [started, setStarted] = useState(false)
   const code = searchParams.get('code')
 
   useEffect(() => {
-    if (!code) return
+    if (!code) {
+      // No code — user may have been redirected after server-side exchange.
+      // Check if a session exists (server-side exchange succeeded).
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setStarted(true)
+        if (!session) {
+          setError('No reset code found. Please request a new password reset link.')
+        }
+      })
+      return
+    }
+
     supabase.auth.exchangeCodeForSession(code).then(({ error: exchangeError }) => {
-      setExchanging(false)
+      setStarted(true)
       if (exchangeError) {
         setError(exchangeError.message === 'PKCE code verifier not found in storage'
           ? 'Session expired. Please request a new password reset link.'
@@ -56,13 +67,15 @@ function ResetPasswordForm() {
     }
   }
 
-  if (exchanging && code) {
+  if (!started) {
     return (
       <div className="relative flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
         <div className="absolute inset-0 -z-10 bg-gradient-surface" />
         <div className="flex flex-col items-center gap-4">
           <span className="h-8 w-8 animate-spin rounded-full border-2 border-[#2a2520] border-t-[#d4a853]" />
-          <p className="text-sm text-text-secondary">Verifying reset link...</p>
+          <p className="text-sm text-text-secondary">
+            {code ? 'Verifying reset link...' : 'Checking session...'}
+          </p>
         </div>
       </div>
     )

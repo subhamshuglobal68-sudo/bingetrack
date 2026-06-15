@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Eye, EyeOff, Film } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 
 function LoginForm() {
   const searchParams = useSearchParams()
@@ -18,8 +18,25 @@ function LoginForm() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [cooldown, setCooldown] = useState(0)
+  const cooldownRef = useRef<ReturnType<typeof setInterval>>(undefined)
   const [error, setError] = useState(() => searchParams.get('error') ?? '')
   const [success, setSuccess] = useState('')
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      cooldownRef.current = setInterval(() => {
+        setCooldown(prev => {
+          if (prev <= 1) {
+            clearInterval(cooldownRef.current)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+      return () => clearInterval(cooldownRef.current)
+    }
+  }, [cooldown])
 
   const getFriendlyError = (message: string) => {
     if (message.includes('Invalid login credentials')) return 'Invalid email or password.'
@@ -29,7 +46,7 @@ function LoginForm() {
     if (message.includes('Unable to validate email address')) return 'Please enter a valid email address.'
     if (message.includes('Database error saving new user')) return 'An account with this email may already exist. If you recently deleted this account, please wait a few minutes and try again.'
     if (message.includes('signup is disabled')) return 'Sign-ups are currently disabled.'
-    if (message.includes('rate limit')) return 'Too many attempts. Please try again later.'
+    if (message.includes('rate limit')) return 'Too many attempts. Please wait a minute and try again.'
     return 'Something went wrong. Please try again.'
   }
 
@@ -47,7 +64,8 @@ function LoginForm() {
       if (error) {
         setError(getFriendlyError(error.message))
       } else {
-        setSuccess('Check your email for a password reset link.')
+        setCooldown(60)
+        setSuccess('Reset link sent! Check your email (and spam folder). If you haven\'t created an account with this email, no email will be sent.')
       }
     } else if (mode === 'signup') {
       const { error } = await supabase.auth.signUp({
@@ -107,7 +125,7 @@ function LoginForm() {
               <button
                 role="tab"
                 aria-selected={mode === 'signin'}
-                onClick={() => { setMode('signin'); setError(''); setSuccess(''); setShowPassword(false) }}
+                onClick={() => { setMode('signin'); setCooldown(0); setError(''); setSuccess(''); setShowPassword(false) }}
                 className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors cursor-pointer ${
                   mode === 'signin'
                     ? 'bg-surface text-text-primary shadow-sm'
@@ -119,7 +137,7 @@ function LoginForm() {
               <button
                 role="tab"
                 aria-selected={mode === 'signup'}
-                onClick={() => { setMode('signup'); setError(''); setSuccess(''); setShowPassword(false) }}
+                onClick={() => { setMode('signup'); setCooldown(0); setError(''); setSuccess(''); setShowPassword(false) }}
                 className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors cursor-pointer ${
                   mode === 'signup'
                     ? 'bg-surface text-text-primary shadow-sm'
@@ -153,7 +171,7 @@ function LoginForm() {
                 id="login-email"
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => { setEmail(e.target.value); if (cooldown > 0) setCooldown(0) }}
                 placeholder="Email"
                 required
                 aria-required="true"
@@ -193,20 +211,23 @@ function LoginForm() {
               type="submit"
               className="w-full py-3"
               isLoading={loading}
+              disabled={cooldown > 0}
               aria-busy={loading}
             >
               {mode === 'signin'
                 ? 'Sign In'
                 : mode === 'signup'
                   ? 'Create Account'
-                  : 'Send Reset Link'}
+                  : cooldown > 0
+                    ? `Resend in ${cooldown}s`
+                    : 'Send Reset Link'}
             </Button>
           </form>
 
           {/* Forgot password link — only in signin mode */}
           {mode === 'signin' && (
             <button
-              onClick={() => { setMode('forgot'); setError(''); setSuccess(''); setShowPassword(false) }}
+              onClick={() => { setCooldown(0); setMode('forgot'); setError(''); setSuccess(''); setShowPassword(false) }}
               className="mt-4 text-xs text-text-secondary hover:text-[#d4a853] transition-colors cursor-pointer"
             >
               Forgot password?
@@ -216,7 +237,7 @@ function LoginForm() {
           {/* Back to sign in — only in forgot mode */}
           {mode === 'forgot' && (
             <button
-              onClick={() => { setMode('signin'); setError(''); setSuccess(''); setShowPassword(false) }}
+              onClick={() => { setCooldown(0); setMode('signin'); setError(''); setSuccess(''); setShowPassword(false) }}
               className="mt-4 text-xs text-text-secondary hover:text-[#d4a853] transition-colors cursor-pointer"
             >
               Back to sign in

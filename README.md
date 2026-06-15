@@ -186,7 +186,7 @@ BingeTrack implements defense-in-depth security at multiple layers:
 | --- | --- |
 | **Input Validation** | `maxLength` constraints, regex patterns, IMDb ID format validation on all user inputs |
 | **Rate Limiting** | In-memory sliding window rate limiter on all API routes (30 req/min default) |
-| **Security Headers** | `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()` |
+| **Security Headers** | `X-Content-Type-Options: nosniff`, `Content-Security-Policy: frame-ancestors 'self' https://sourabh08.vercel.app`, `X-XSS-Protection: 1; mode=block`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()` |
 | **Auth Protection** | Middleware enforces session refresh; unauthenticated users redirected from `/watchlists` to `/login` |
 | **Open Redirect Guard** | Auth flows validate redirect targets against allowed paths |
 | **RLS + App-Level** | Supabase Row Level Security policies alongside app-level `user_id` filters for defense in depth |

@@ -30,6 +30,14 @@ export async function GET(request: Request) {
     )
   }
 
+  // Recovery (password reset) links use PKCE with verifier stored in browser localStorage.
+  // The server can't access it, so we redirect to the client page to exchange there.
+  if (type === 'recovery') {
+    return NextResponse.redirect(
+      new URL(`/reset-password?code=${code}`, requestUrl.origin)
+    )
+  }
+
   const supabase = await createClient()
 
   // Exchange the authorization code for a session
@@ -75,10 +83,7 @@ export async function GET(request: Request) {
   }
 
   // Build the redirect URL
-  const redirectUrl = type === 'recovery'
-    ? new URL('/reset-password', requestUrl.origin)
-    : new URL(redirectTo, requestUrl.origin)
-
+  const redirectUrl = new URL(redirectTo, requestUrl.origin)
   const response = NextResponse.redirect(redirectUrl)
 
   // Carry session cookies from the cookie store onto the redirect response

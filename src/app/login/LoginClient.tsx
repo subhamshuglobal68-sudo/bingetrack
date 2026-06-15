@@ -62,6 +62,7 @@ function LoginForm() {
       })
       setLoading(false)
       if (error) {
+        console.error('[Forgot Error]', error.message)
         setError(getFriendlyError(error.message))
       } else {
         setCooldown(60)

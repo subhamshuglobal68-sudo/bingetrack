@@ -38,7 +38,7 @@ export async function GET(request: Request) {
   if (exchangeError) {
     console.error('[Auth Callback] Code exchange failed:', exchangeError.message)
     return NextResponse.redirect(
-      new URL(`/login?error=${encodeURIComponent('Invalid or expired link. Please try again.')}`, requestUrl.origin)
+      new URL(`/login?error=${encodeURIComponent(exchangeError.message)}`, requestUrl.origin)
     )
   }
 
